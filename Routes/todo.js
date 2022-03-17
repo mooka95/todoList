@@ -6,7 +6,10 @@ const CustomError=require('../helpers/CustomError')
 
 const router = express.Router();
 
-router.post('/',async(req, res) => {
+router.post('/',validateRequest([
+    body('title').exists(),
+    body('description').exists()
+]),async(req, res) => {
     const todo=new Todo({
         title:req.body.title,
         description:req.body.description
@@ -34,8 +37,17 @@ router.delete('/:id',async(req,res) =>{
     res.status(200).json({
         'message':'Item deleted successfully'
     });
-    console.log(deletedTodo)
+})
 
+router.put('/:id',validateRequest([
+    body('title').exists(),
+    body('description').exists()
+]),async(req,res,next)=>{
+    const updatedTodo= await Todo.findOneAndUpdate({_id:req.params.id},{title:req.body.title,description:req.body.description});
+    res.status(200).json({
+        updatedTodo,
+        "message":"item updated successfully"
+    })
 
 })
 
